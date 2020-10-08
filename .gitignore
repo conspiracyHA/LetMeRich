@@ -1,0 +1,5 @@
+site-packages
+Scripts
+.idea
+venv
+/bin/Utility/__pycache__
