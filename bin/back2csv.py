@@ -49,7 +49,7 @@ for category_id, descr_list in result.items():
         print(descr)
 
 gg = {
-    'table_setting': {
+    'expense':{
         'category': [
             {'name': '飲食', 'sub_category': ['預設', '晚餐', '早餐', '午餐', '零食', '飲料', '酒']},
             {'name': '交通', 'sub_category': ['預設', '停車費', '捷運', '悠遊卡', '火車', '公車', '高鐵', '汽油', 'I-Rent', 'Wemo', 'GoShare', '過路費']},
@@ -69,13 +69,15 @@ gg = {
             {'name': '花錢消災', 'sub_category': ['預設']},
         ],
         'budget': 25000,
+        'items': [
+            {
+                'datetime': '2016-04-05 12:07:15',
+                'amount': 120,
+                'description': '',
+                'category': 0,
+                'sub_category': 3
+            },
+        ]
     },
-    'items': [
-        {
-            'datetime': '2016-04-05 12:07:15',
-            'amount': 120,
-            'description': '',
-            'category': [0, 3]
-        },
-    ]
+    
 }
