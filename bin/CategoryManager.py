@@ -1,5 +1,6 @@
 from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
+from collections import Counter
 from Utility.Path import path_join
 import gspread
 
@@ -45,11 +46,17 @@ class CategoryManager:
         sheet = self.client.open_by_key(self.spread_sheet_id)
         # print(sheet.worksheets())
         target_sheet = sheet.worksheet('category_2')
-        result_list = [[f'{cat_idx}-{subcat_idx}', cat_name, subcat_name] for cat_idx, cat_name in enumerate(idx2cat_name)
+        subcat_name_counter = Counter([subcat_name for subcat_list in cat_idx2subcat_list for subcat_name in subcat_list])
+        result_list = [[f'{cat_idx}-{subcat_idx}',
+                        cat_name,
+                        subcat_name,
+                        subcat_name if subcat_name_counter[subcat_name] == 1 else cat_name + subcat_name
+                        ] for cat_idx, cat_name in enumerate(idx2cat_name)
                        for subcat_idx, subcat_name in enumerate(cat_idx2subcat_list[cat_idx])]
+
         for row in result_list:
             print(row)
-        target_sheet.update(f'A2:C', result_list)
+        target_sheet.update(f'A2:D', result_list)
 
     def update_new_cat(self, cat_name, subcat_name):
         idx2cat_name, cat_idx2subcat_list = self._get_current_category()
