@@ -3,3 +3,7 @@ Scripts
 .idea
 venv
 /bin/Utility/__pycache__
+google_sheet_key.txt
+LetMeRich-52e48c199a07.json
+bot_token.txt
+*.pyc

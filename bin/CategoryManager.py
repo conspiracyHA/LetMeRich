@@ -19,10 +19,17 @@ class CategoryManager:
             self.spread_sheet_id = f.readline()
         self.client = gspread.authorize(self.credentials)
 
+    def get_all_category(self):
+        idx2cat_name, cat_idx2subcat_list = self._get_current_category()
+        return {
+            cat_name: subcat_list for cat_name, subcat_list in
+            zip(idx2cat_name, cat_idx2subcat_list)
+        }
+
     def _get_current_category(self):
         sheet = self.client.open_by_key(self.spread_sheet_id)
         # print(sheet.worksheets())
-        target_sheet = sheet.worksheet('category_2')
+        target_sheet = sheet.worksheet('category')
         all_values = target_sheet.get_all_values()
 
         idx2cat_name = list()
@@ -36,17 +43,17 @@ class CategoryManager:
                 cat_idx2subcat_list.append([subcat_name])
                 continue
             cat_idx2subcat_list[cat_idx].append(subcat_name)
-        print('old')
-        for cat_idx, cat_name in enumerate(idx2cat_name):
-            for subcat_idx, subcat_name in enumerate(cat_idx2subcat_list[cat_idx]):
-                print(f'{cat_idx}-{subcat_idx}, {cat_name}, {subcat_name}')
+        # print('old')
+        # for cat_idx, cat_name in enumerate(idx2cat_name):
+        #     for subcat_idx, subcat_name in enumerate(cat_idx2subcat_list[cat_idx]):
+        #         print(f'{cat_idx}-{subcat_idx}, {cat_name}, {subcat_name}')
 
         return idx2cat_name, cat_idx2subcat_list
 
     def _write(self, idx2cat_name, cat_idx2subcat_list):
         sheet = self.client.open_by_key(self.spread_sheet_id)
         # print(sheet.worksheets())
-        target_sheet = sheet.worksheet('category_2')
+        target_sheet = sheet.worksheet('category')
         subcat_counter = Counter([subcat for subcat_list in cat_idx2subcat_list for subcat in subcat_list])
         result_list = list()
         for cat_idx, cat_name in enumerate(idx2cat_name):
@@ -87,6 +94,23 @@ class CategoryManager:
             if subcat_name not in cat_idx2subcat_list[target_idx]:
                 cat_idx2subcat_list[target_idx].append(subcat_name)
         self._write(idx2cat_name, cat_idx2subcat_list)
+
+    def get_cat_idx_str(self, subcat, cat=None):
+        idx2cat_name, cat_idx2subcat_list = self._get_current_category()
+        if subcat == '預設':
+            raise ValueError('我怎麼會知道是什麼預設!!')
+        if cat is not None:
+            cat_idx = idx2cat_name.index(cat)
+            subcat_idx = cat_idx2subcat_list[cat_idx].index(subcat)
+            return cat, f'{cat_idx}-{subcat_idx}'
+
+        for cat_idx, subcat_list in enumerate(cat_idx2subcat_list):
+            try:
+                subcat_idx = subcat_list.index(subcat)
+            except ValueError:
+                continue
+            return idx2cat_name[cat_idx], f'{cat_idx}-{subcat_idx}'
+        raise ValueError(f'我找不到{subcat}是屬於哪個類別的!')
 
 
 if __name__ == '__main__':

@@ -17,8 +17,11 @@ class ItemManager:
         with open(path_join('google_sheet_key.txt')) as f:
             self.spread_sheet_id = f.readline()
         self.client = gspread.authorize(self.credentials)
+        self.sheet = self.client.open_by_key(self.spread_sheet_id)
+        self.target_sheet = self.sheet.worksheet('items')
 
-    def override_items(self, items):
-        sheet = self.client.open_by_key(self.spread_sheet_id)
-        target_sheet = sheet.worksheet('items')
-        target_sheet.update(f'A2:D', items)
+    def insert_item(self, date, cat_subcat_idx_str, amount, descr):
+        all_items = self.target_sheet.get_all_values()
+        all_items = all_items[1:]
+        all_items.append([date, cat_subcat_idx_str, amount, descr])
+        self.target_sheet.update(f'A2:D', all_items)
